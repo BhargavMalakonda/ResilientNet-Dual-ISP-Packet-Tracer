@@ -1,4 +1,4 @@
-ResilientNet - optional security commands (replace <password> with your own; never commit real passwords)
+ResilientNet - optional security commands (replace <password> with your own)
 
 ### SSH on routers (R-CORE, R-AREA1, R-AREA2, R-EDGE)
 configure terminal
