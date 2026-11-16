@@ -1,0 +1,43 @@
+ResilientNet - optional security commands (replace <password> with your own; never commit real passwords)
+
+### SSH on routers (R-CORE, R-AREA1, R-AREA2, R-EDGE)
+configure terminal
+ip domain-name resilientnet.local
+username admin secret <password>
+enable secret <password>
+service password-encryption
+crypto key generate rsa
+ (when asked for the modulus, type 1024)
+ip ssh version 2
+line vty 0 4
+ login local
+ transport input ssh
+end
+write memory
+
+### On switches: same lines, but use "line vty 0 15" and set the management gateway
+ip default-gateway <management gateway of the area>
+
+### Management ACL on R-AREA1 (R-AREA2 is the same, on g0/0.30 and g0/0.40)
+access-list 120 permit ip any host 10.10.99.5
+access-list 120 permit ip any host 10.10.99.21
+access-list 120 deny ip any 10.10.99.0 0.0.0.15
+access-list 120 deny ip any 10.10.99.16 0.0.0.15
+access-list 120 permit ip any any
+interface g0/0.10
+ ip access-group 120 in
+interface g0/0.20
+ ip access-group 120 in
+
+### Port security on switch PC ports
+interface range fa0/1 - 2
+ switchport mode access
+ switchport port-security
+ switchport port-security maximum 2
+ switchport port-security mac-address sticky
+ switchport port-security violation restrict
+
+### Checks
+show ip ssh
+show access-lists
+show port-security
